@@ -4,20 +4,23 @@ const puppeteer = require('puppeteer');
 const app = express();
 const port = 3000;
 
+app.use(express.json()); // Middleware de parser de corpo JSON
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  // Other CORS headers can be set here as needed
+  res.setHeader('Access-Control-Allow-Origin', '*'); // Permitir todas as origens
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); // Métodos permitidos
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); // Cabeçalhos permitidos
   next();
 });
 
-app.get('/scrape', async (req, res) => {
+app.all('/scrape', async (req, res) => {
+  let linkParaOScrappe =  req.body.url
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
 
   let leads = [];
 
   try {
-    await page.goto('https://www.google.com/search?q=site%3Alinkedin.com%2Fcompany+%2211-50+funcion%C3%A1rios%22&rlz=1C1VDKB_pt-PTBR1058BR1058&oq=site&gs_lcrp=EgZjaHJvbWUqCAgAEEUYJxg7MggIABBFGCcYOzIGCAEQRRg5MgsIAhBFGCcYOxiKBTINCAMQABiDARixAxiABDINCAQQABiDARixAxiABDIGCAUQRRg8MgYIBhBFGDwyBggHEEUYPNIBBzYzN2owajeoAgCwAgA&sourceid=chrome&ie=UTF-8');
+    await page.goto(linkParaOScrappe);
     await page.waitForSelector("div .MjjYud");
 
     const titulos = await page.evaluate(() => {
